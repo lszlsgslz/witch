@@ -33,6 +33,7 @@ func NewServer(addr string, control *system.Controller, cfg *Config) *Server {
 	ser.m.Use(authInclusive("/api", authFunc))
 	ser.m.Use(render.Renderer(render.Options{}))
 	ser.m.Put("/api/app/actions", sysAction)
+	ser.m.Get("/api/check", check)
 	return ser
 }
 

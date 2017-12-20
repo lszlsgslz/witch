@@ -5,10 +5,12 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/Eagle-X/witch/system"
+	"github.com/lszlsgslz/checking"
 	"github.com/martini-contrib/render"
 )
 
@@ -34,4 +36,19 @@ func sysAction(control *system.Controller, req *http.Request, r render.Render) {
 		return
 	}
 	r.JSON(http.StatusOK, control.Handle(action))
+}
+
+func check(req *http.Request, r render.Render) {
+	req.ParseForm()
+
+	checkURL := req.FormValue("url")
+	task := checking.NewCheckTask(checkURL)
+
+	err := task.Check()
+	if err != nil {
+		r.JSON(http.StatusOK, system.ActionStatus{false, fmt.Sprintf("noPass: %s", task.Reason.Error())})
+		return
+	}
+
+	r.JSON(http.StatusOK, system.ActionStatus{true, "pass"})
 }
